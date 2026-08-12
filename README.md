@@ -31,17 +31,13 @@ If you searched for *uninstall a program*, *uninstall programs*, *bulk uninstall
 | **Search + sort** | Find apps quickly; sort by name, publisher, version, size, or status |
 | **Quiet when possible** | Uses quiet uninstall strings and silent MSI flags first |
 | **Safety rails** | Protected entries for this app, system components, KB updates, and common runtimes |
-| **Live progress** | Per-app status (queued / running / done / failed) + exit codes in the log |
+| **Live progress** | Per-app status (queued / running / uninstalled / failed) + exit codes in the log |
 | **Lightweight native app** | Tauri 2 + Rust — small installer vs Electron-based utilities |
 | **Shippable Windows build** | NSIS per-machine installer, Authenticode-ready |
 
 ## Screenshots
 
-Add captures under `docs/images/` and link them here:
-
-```markdown
 ![Uninstall a Program (Bulk Edition) main window](docs/images/main-window.png)
-```
 
 ## Download / build
 
