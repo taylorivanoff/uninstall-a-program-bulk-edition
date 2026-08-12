@@ -160,7 +160,45 @@ jobs:
 
       - name: Build NSIS setup
         working-directory: bulk-uninstaller
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: bun run release
+
+      - name: Generate latest.json
+        working-directory: bulk-uninstaller
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.check-version.outputs.version }}"
+          EXE=$(ls src-tauri/target/release/bundle/nsis/*-setup.exe | head -n1)
+          SIG_FILE="${EXE}.sig"
+          if [ ! -f "$SIG_FILE" ]; then
+            echo "No updater signature (TAURI_SIGNING_PRIVATE_KEY unset) — skipping latest.json"
+            exit 0
+          fi
+          BASENAME=$(basename "$EXE")
+          # GitHub Releases rewrites spaces to dots in asset URLs.
+          ASSET_NAME="${BASENAME// /.}"
+          export VERSION
+          export PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          export URL="https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases/download/v${VERSION}/${ASSET_NAME}"
+          export SIGNATURE=$(tr -d '\r\n' < "$SIG_FILE")
+          bun -e "
+            const fs = require('fs');
+            const out = {
+              version: process.env.VERSION,
+              notes: 'See the release notes for details.',
+              pub_date: process.env.PUB_DATE,
+              platforms: {
+                'windows-x86_64': {
+                  url: process.env.URL,
+                  signature: process.env.SIGNATURE,
+                },
+              },
+            };
+            fs.writeFileSync('src-tauri/target/release/bundle/nsis/latest.json', JSON.stringify(out, null, 2));
+          "
 
       - name: Upload setup to GitHub Release
         uses: softprops/action-gh-release@v2
@@ -170,6 +208,8 @@ jobs:
           name: v${{ needs.check-version.outputs.version }}
           files: |
             bulk-uninstaller/src-tauri/target/release/bundle/nsis/*.exe
+            bulk-uninstaller/src-tauri/target/release/bundle/nsis/*.sig
+            bulk-uninstaller/src-tauri/target/release/bundle/nsis/latest.json
           body: |
             ## Uninstall a Program (Bulk Edition) v${{ needs.check-version.outputs.version }}
 
@@ -177,6 +217,6 @@ jobs:
 
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
-          fail_on_unmatched_files: true
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
