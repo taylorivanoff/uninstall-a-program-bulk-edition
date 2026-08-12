@@ -25,6 +25,7 @@ pub struct InstalledProgram {
     pub system_component: bool,
     pub protected: bool,
     pub hive: String,
+    pub category: Option<String>,
 }
 
 struct HiveSource {
@@ -92,6 +93,8 @@ pub fn list_installed_programs(show_system: bool) -> Result<Vec<InstalledProgram
         }
     }
 
+    crate::categories::enrich_categories(&mut programs);
+
     programs.sort_by(|a, b| {
         a.display_name
             .to_lowercase()
@@ -138,6 +141,7 @@ fn read_program(source: &HiveSource, subkey_name: &str, subkey: &RegKey) -> Opti
         system_component,
         protected,
         hive: source.hive_name.to_string(),
+        category: None,
     })
 }
 

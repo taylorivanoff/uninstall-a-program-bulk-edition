@@ -7,9 +7,12 @@ const { listen } = window.__TAURI__.event;
  *  publisher?: string,
  *  displayVersion?: string,
  *  installDate?: string,
+ *  installLocation?: string,
+ *  uninstallString?: string,
  *  estimatedSizeKb?: number,
  *  protected: boolean,
  *  systemComponent: boolean,
+ *  category?: string,
  * }} Program */
 
 /** @type {Program[]} */
@@ -19,7 +22,7 @@ const selected = new Set();
 /** @type {Map<string, {status: string, message?: string}>} */
 const statusById = new Map();
 let busy = false;
-/** @type {"name" | "publisher" | "version" | "size" | "status"} */
+/** @type {"name" | "category" | "publisher" | "version" | "size" | "status"} */
 let sortKey = "name";
 /** @type {"asc" | "desc"} */
 let sortDir = "asc";
@@ -77,6 +80,8 @@ function compareText(a, b) {
 
 function sortValue(p) {
   switch (sortKey) {
+    case "category":
+      return (p.category ?? "").toLowerCase();
     case "publisher":
       return (p.publisher ?? "").toLowerCase();
     case "version":
@@ -96,7 +101,8 @@ function visiblePrograms() {
   let list = programs;
   if (q) {
     list = programs.filter((p) => {
-      const hay = `${p.displayName} ${p.publisher ?? ""} ${p.displayVersion ?? ""}`.toLowerCase();
+      const hay =
+        `${p.displayName} ${p.category ?? ""} ${p.publisher ?? ""} ${p.displayVersion ?? ""}`.toLowerCase();
       return hay.includes(q);
     });
   }
@@ -181,6 +187,7 @@ function render() {
           ? ' <span class="muted" title="Protected">(protected)</span>'
           : ""
       }</td>
+      <td class="muted">${escapeHtml(p.category ?? "—")}</td>
       <td class="muted">${escapeHtml(p.publisher ?? "—")}</td>
       <td class="muted">${escapeHtml(p.displayVersion ?? "—")}</td>
       <td class="muted">${formatSize(p.estimatedSizeKb)}</td>
@@ -221,10 +228,31 @@ async function loadPrograms() {
     }
     render();
     logLine(`Loaded ${programs.length} programs.`);
+    startBackgroundSizeProbe();
   } catch (err) {
     els.loadingState.classList.add("hidden");
     logLine(`Failed to list programs: ${err}`);
   }
+}
+
+function startBackgroundSizeProbe() {
+  const missing = programs.filter(
+    (p) =>
+      (p.estimatedSizeKb == null || Number.isNaN(p.estimatedSizeKb)) &&
+      (p.installLocation || p.uninstallString)
+  );
+  if (!missing.length) return;
+
+  logLine(`Probing folder sizes for ${missing.length} program(s) in the background…`);
+  invoke("probe_missing_sizes", {
+    items: missing.map((p) => ({
+      id: p.id,
+      installLocation: p.installLocation ?? null,
+      uninstallString: p.uninstallString ?? null,
+    })),
+  }).catch((err) => {
+    logLine(`Size probe failed to start: ${err}`);
+  });
 }
 
 async function refreshElevation() {
@@ -358,6 +386,24 @@ await listen("uninstall-progress", (event) => {
 
 await listen("uninstall-finished", () => {
   logLine("Batch finished.");
+});
+
+await listen("program-size", (event) => {
+  const payload = event.payload;
+  const program = programs.find((p) => p.id === payload.id);
+  if (!program) return;
+  program.estimatedSizeKb = payload.estimatedSizeKb;
+  render();
+});
+
+await listen("program-size-finished", () => {
+  const missing = sumSizeKb(programs).missing;
+  logLine(
+    missing > 0
+      ? `Folder size probe finished (${missing} still unknown).`
+      : "Folder size probe finished."
+  );
+  render();
 });
 
 await listen("tray:action", (event) => {
