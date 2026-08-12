@@ -1,6 +1,6 @@
 [package]
 name = "bulk-uninstaller"
-version = "0.1.0"
+version = "0.1.1"
 description = "Uninstall a Program (Bulk Edition) — uninstall a program, or many at once, on Windows"
 authors = ["Taylor Ivanoff"]
 edition = "2021"
