@@ -1,0 +1,181 @@
+name: Release
+
+on:
+  push:
+    branches: [master, main]
+
+permissions:
+  contents: write
+
+jobs:
+  check-version:
+    if: "!startsWith(github.event.head_commit.message, 'chore: bump version')"
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      version: ${{ steps.check.outputs.version }}
+      ref: ${{ steps.check.outputs.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - id: check
+        run: |
+          set -e
+          # Release only when app source changes (frontend, Rust, manifests, package).
+          # Docs, README, CI config, licenses, etc. are ignored.
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            CHANGED=$(git diff --name-only HEAD^ HEAD)
+          else
+            CHANGED=$(git show --pretty="" --name-only HEAD)
+          fi
+
+          is_release_relevant() {
+            case "$1" in
+              package.json|package-lock.json|bun.lock|bun.lockb|yarn.lock|pnpm-lock.yaml)
+                return 0
+                ;;
+              src/*|src-tauri/src/*|src-tauri/capabilities/*|src-tauri/windows/*|src-tauri/icons/*)
+                return 0
+                ;;
+              src-tauri/build.rs|src-tauri/Cargo.toml|src-tauri/Cargo.lock|src-tauri/tauri.conf.json|app-icon.png)
+                return 0
+                ;;
+            esac
+            return 1
+          }
+
+          SHOULD_RELEASE=false
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            if is_release_relevant "$file"; then
+              SHOULD_RELEASE=true
+              break
+            fi
+          done <<< "$CHANGED"
+
+          if [ "$SHOULD_RELEASE" != true ]; then
+            echo "Only docs/metadata changed; skipping version bump and release"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+            echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CURRENT=$(jq -r .version package.json)
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            OLD=$(git show HEAD^:package.json | jq -r .version)
+          else
+            OLD=""
+          fi
+
+          if [ -n "$OLD" ] && [ "$OLD" = "$CURRENT" ]; then
+            node scripts/bump-version.js patch
+            CURRENT=$(jq -r .version package.json)
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml
+            for lock in package-lock.json bun.lock bun.lockb yarn.lock src-tauri/Cargo.lock; do
+              if [ -f "$lock" ]; then git add "$lock"; fi
+            done
+            git commit -m "chore: bump version to ${CURRENT}"
+            git push
+            echo "Auto-bumped version to ${CURRENT}"
+          else
+            echo "Using version ${CURRENT} (already bumped or initial)"
+          fi
+
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+          echo "version=${CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.should_release == 'true'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Uninstall a Program
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check-version.outputs.ref }}
+          path: bulk-uninstaller
+          fetch-depth: 0
+
+      - name: Checkout tauri-tray-base
+        uses: actions/checkout@v4
+        with:
+          repository: taylorivanoff/tauri-tray-base
+          path: tauri-tray-base
+
+      - name: Generate changelog
+        id: changelog
+        working-directory: bulk-uninstaller
+        shell: bash
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" -10)
+          else
+            COMMITS=$(git log --pretty=format:"- %s" ${LAST_TAG}..HEAD)
+          fi
+          echo "commits<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$COMMITS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: bulk-uninstaller/src-tauri -> target
+
+      - name: Install frontend dependencies
+        working-directory: bulk-uninstaller
+        run: bun install
+
+      - name: Configure Windows code signing (optional)
+        working-directory: bulk-uninstaller
+        shell: pwsh
+        env:
+          _CERT_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
+        run: |
+          if (-not [string]::IsNullOrEmpty($env:_CERT_THUMBPRINT)) {
+            $conf = "src-tauri/tauri.conf.json"
+            $json = Get-Content $conf -Raw | ConvertFrom-Json
+            $json.bundle.windows.certificateThumbprint = $env:_CERT_THUMBPRINT
+            $json | ConvertTo-Json -Depth 20 | Set-Content $conf
+            Write-Host "Windows Authenticode thumbprint configured."
+          } else {
+            Write-Host "No WINDOWS_CERTIFICATE_THUMBPRINT secret - building unsigned."
+          }
+
+      - name: Build NSIS setup
+        working-directory: bulk-uninstaller
+        run: bun run release
+
+      - name: Upload setup to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Uninstall a Program (Bulk Edition) v${{ needs.check-version.outputs.version }}
+          files: |
+            bulk-uninstaller/src-tauri/target/release/bundle/nsis/*.exe
+          body: |
+            ## Uninstall a Program (Bulk Edition) v${{ needs.check-version.outputs.version }}
+
+            Windows NSIS setup (`Uninstall a Program (Bulk Edition)_*_x64-setup.exe`).
+
+            ## What's Changed
+            ${{ steps.changelog.outputs.commits }}
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

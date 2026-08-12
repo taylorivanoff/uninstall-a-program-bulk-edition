@@ -1,0 +1,502 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f3f3f3;
+  --bg-elevated: #ffffff;
+  --bg-button: #e8e8ea;
+  --bg-button-hover: #dedee0;
+  --border: rgba(0, 0, 0, 0.08);
+  --text: #1c1c1e;
+  --text-secondary: rgba(28, 28, 30, 0.55);
+  --accent: #0078d4;
+  --accent-text: #ffffff;
+  --danger: #c42b1c;
+  --success: #0f7b0f;
+  --warning: #ca5010;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  --radius: 8px;
+  --font: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --row-hover: color-mix(in srgb, var(--accent) 10%, transparent);
+  --row-selected: color-mix(in srgb, var(--accent) 14%, transparent);
+  --thead-bg: var(--bg-elevated);
+  --input-bg: color-mix(in srgb, var(--bg) 70%, var(--bg-elevated));
+  --log-bg: color-mix(in srgb, var(--bg-button) 60%, var(--bg-elevated));
+  --pill-neutral-bg: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  --pill-queued-bg: color-mix(in srgb, var(--warning) 14%, transparent);
+  --pill-queued-fg: var(--warning);
+  --pill-run-bg: color-mix(in srgb, var(--accent) 14%, transparent);
+  --pill-run-fg: var(--accent);
+  --pill-ok-bg: color-mix(in srgb, var(--success) 14%, transparent);
+  --pill-ok-fg: var(--success);
+  --pill-fail-bg: color-mix(in srgb, var(--danger) 14%, transparent);
+  --pill-fail-fg: var(--danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --bg-elevated: #2c2c2e;
+    --bg-button: #3a3a3c;
+    --bg-button-hover: #48484a;
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #f5f5f7;
+    --text-secondary: rgba(245, 245, 247, 0.55);
+    --accent: #4cc2ff;
+    --accent-text: #00344d;
+    --danger: #ff6961;
+    --success: #32d74b;
+    --warning: #ffb86b;
+    --shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto minmax(96px, 160px);
+  gap: 6px;
+  padding: 8px 10px 10px;
+  min-height: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.app-title {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.auth-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.auth-badge.ok {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.auth-badge.pending {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+.auth-badge.error {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.count {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+#search {
+  flex: 1 1 220px;
+  min-width: 160px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--text);
+  background: var(--input-bg);
+}
+
+#search:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+#search::placeholder {
+  color: var(--text-secondary);
+}
+
+.check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.text-btn {
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-button);
+  color: var(--text);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  padding: 0 10px;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.text-btn:hover:not(:disabled) {
+  background: var(--bg-button-hover);
+}
+
+.text-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.text-btn.primary {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.text-btn.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.text-btn.danger {
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 24%, transparent);
+}
+
+.text-btn.danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 26%, transparent);
+}
+
+.text-btn.tiny {
+  height: 22px;
+  padding: 0 8px;
+  font-size: 9px;
+}
+
+.table-section {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  position: relative;
+}
+
+.table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.program-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.program-table th,
+.program-table td {
+  padding: 5px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.program-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--thead-bg);
+  font-size: 9px;
+  font-weight: 650;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  padding: 4px 6px;
+}
+
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.sort-btn:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.sort-btn[aria-pressed="true"] {
+  color: var(--accent);
+}
+
+.sort-ind {
+  font-size: 8px;
+  min-width: 0.8em;
+  opacity: 0.9;
+}
+
+.program-table tbody tr:hover {
+  background: var(--row-hover);
+}
+
+.program-table tbody tr.selected {
+  background: var(--row-selected);
+}
+
+.program-table tbody tr.protected {
+  opacity: 0.55;
+}
+
+.col-check {
+  width: 36px;
+}
+
+.name-cell {
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+.status-pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 650;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--pill-neutral-bg);
+  color: var(--text-secondary);
+  text-transform: lowercase;
+}
+
+.status-pill.running {
+  background: var(--pill-run-bg);
+  color: var(--pill-run-fg);
+}
+
+.status-pill.uninstalled {
+  background: var(--pill-ok-bg);
+  color: var(--pill-ok-fg);
+}
+
+.status-pill.failed {
+  background: var(--pill-fail-bg);
+  color: var(--pill-fail-fg);
+}
+
+.status-pill.queued {
+  background: var(--pill-queued-bg);
+  color: var(--pill-queued-fg);
+}
+
+.empty {
+  position: absolute;
+  inset: 28px 0 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.selection-info {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.selection-info .sep {
+  margin: 0 4px;
+  opacity: 0.55;
+}
+
+.selection-info strong,
+.selection-info #selected-size {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.log-panel {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 4px 8px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--log-bg);
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+#log {
+  margin: 0;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  user-select: text;
+}
+
+#confirm-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  max-width: 460px;
+  width: calc(100% - 32px);
+  height: fit-content;
+  max-height: calc(100% - 48px);
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+#confirm-dialog::backdrop {
+  background: color-mix(in srgb, #000 45%, transparent);
+}
+
+.confirm-form {
+  padding: 14px;
+}
+
+.confirm-form h2 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.confirm-form p {
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+#confirm-list {
+  margin: 0 0 12px;
+  padding: 8px 10px 8px 24px;
+  max-height: 200px;
+  overflow: auto;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #confirm-dialog::backdrop {
+    background: color-mix(in srgb, #000 62%, transparent);
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "uninstall-a-program",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Uninstall a Program (Bulk Edition) — uninstall a program, or many at once, on Windows",
+  "keywords": [
+    "uninstall-a-program",
+    "uninstall-programs",
+    "windows-uninstaller",
+    "bulk-uninstall",
+    "uninstall-multiple-programs",
+    "batch-remove-software",
+    "program-remover",
+    "msi-uninstall",
+    "windows-11",
+    "tauri"
+  ],
+  "author": {
+    "name": "Taylor Ivanoff"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/run-tauri.cjs dev",
+    "start": "node scripts/run-tauri.cjs dev",
+    "build": "node scripts/run-tauri.cjs build",
+    "tauri": "node scripts/run-tauri.cjs",
+    "release": "node scripts/run-tauri.cjs build",
+    "bump": "node scripts/bump-version.js",
+    "icon": "node scripts/run-tauri.cjs icon app-icon.png"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1"
+  }
+}
