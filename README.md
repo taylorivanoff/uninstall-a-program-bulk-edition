@@ -4,6 +4,8 @@
 
 > Type **uninstall a program** in the Windows search bar → open **Uninstall a Program (Bulk Edition)**. Quiet MSI removal, admin-ready. Built with Tauri + Rust — not Electron bloat.
 
+[![Release](https://img.shields.io/github/v/release/taylorivanoff/uninstall-a-program-bulk-edition)](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
+[![Downloads](https://img.shields.io/github/downloads/taylorivanoff/uninstall-a-program-bulk-edition/total)](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
 ![License](https://img.shields.io/badge/license-proprietary-lightgrey)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![Stack](https://img.shields.io/badge/stack-Tauri%202%20%2B%20Rust-24C8DB)
@@ -39,7 +41,12 @@ If you searched for *uninstall a program*, *uninstall programs*, *bulk uninstall
 
 ![Uninstall a Program (Bulk Edition) main window](docs/images/main-window.png)
 
-## Download / build
+## Installation
+
+1. Download the latest installer from [Releases](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
+2. Run the setup exe and follow the prompts (WebView2 Runtime is used if already installed)
+
+## Build from source
 
 ```bash
 bun install
