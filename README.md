@@ -37,10 +37,6 @@ If you searched for *uninstall a program*, *uninstall programs*, *bulk uninstall
 | **Lightweight native app** | Tauri 2 + Rust — small installer vs Electron-based utilities |
 | **Shippable Windows build** | NSIS per-machine installer, Authenticode-ready |
 
-## Screenshots
-
-![Uninstall a Program (Bulk Edition) main window](docs/images/main-window.png)
-
 ## Installation
 
 1. Download the latest installer from [Releases](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
