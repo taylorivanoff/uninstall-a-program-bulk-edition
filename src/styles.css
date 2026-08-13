@@ -329,6 +329,10 @@ body {
   width: 36px;
 }
 
+.col-date {
+  white-space: nowrap;
+}
+
 .name-cell {
   font-weight: 600;
 }

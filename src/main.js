@@ -22,7 +22,7 @@ const selected = new Set();
 /** @type {Map<string, {status: string, message?: string}>} */
 const statusById = new Map();
 let busy = false;
-/** @type {"name" | "category" | "publisher" | "version" | "size" | "status"} */
+/** @type {"name" | "category" | "publisher" | "version" | "size" | "installDate" | "status"} */
 let sortKey = "name";
 /** @type {"asc" | "desc"} */
 let sortDir = "asc";
@@ -62,6 +62,24 @@ function formatSize(kb) {
   return `${(mb / 1024).toFixed(1)} GB`;
 }
 
+function formatInstallDate(value) {
+  if (!value) return "—";
+  const raw = String(value).trim();
+  const match = /^(\d{4})(\d{2})(\d{2})$/.exec(raw);
+  if (!match) return raw;
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3])
+  );
+  if (Number.isNaN(date.getTime())) return raw;
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 function sumSizeKb(list) {
   let total = 0;
   let known = 0;
@@ -88,6 +106,8 @@ function sortValue(p) {
       return (p.displayVersion ?? "").toLowerCase();
     case "size":
       return p.estimatedSizeKb ?? -1;
+    case "installDate":
+      return p.installDate ?? "";
     case "status":
       return (statusById.get(p.id)?.status ?? "").toLowerCase();
     case "name":
@@ -102,7 +122,7 @@ function visiblePrograms() {
   if (q) {
     list = programs.filter((p) => {
       const hay =
-        `${p.displayName} ${p.category ?? ""} ${p.publisher ?? ""} ${p.displayVersion ?? ""}`.toLowerCase();
+        `${p.displayName} ${p.category ?? ""} ${p.publisher ?? ""} ${p.displayVersion ?? ""} ${formatInstallDate(p.installDate)} ${p.installDate ?? ""}`.toLowerCase();
       return hay.includes(q);
     });
   }
@@ -191,6 +211,7 @@ function render() {
       <td class="muted">${escapeHtml(p.publisher ?? "—")}</td>
       <td class="muted">${escapeHtml(p.displayVersion ?? "—")}</td>
       <td class="muted">${formatSize(p.estimatedSizeKb)}</td>
+      <td class="muted col-date">${escapeHtml(formatInstallDate(p.installDate))}</td>
       <td><span class="${statusClass}">${
         statusText ? escapeHtml(statusText) : "—"
       }</span></td>
@@ -336,7 +357,7 @@ document.querySelector("thead")?.addEventListener("click", (e) => {
     sortDir = sortDir === "asc" ? "desc" : "asc";
   } else {
     sortKey = /** @type {typeof sortKey} */ (key);
-    sortDir = key === "size" ? "desc" : "asc";
+    sortDir = key === "size" || key === "installDate" ? "desc" : "asc";
   }
   render();
 });
