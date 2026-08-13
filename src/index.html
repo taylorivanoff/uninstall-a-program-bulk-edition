@@ -1,132 +1,120 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Uninstall a Program (Bulk Edition) — uninstall a program on Windows, or many at once. Search, sort, multi-select, quiet MSI uninstall, and admin elevation."
-    />
-    <meta
-      name="keywords"
-      content="uninstall a program, uninstall programs, windows uninstaller, bulk uninstall, uninstall multiple programs, batch remove software, windows 11 uninstaller"
-    />
-    <meta name="color-scheme" content="light dark" />
-    <title>Uninstall a Program (Bulk Edition)</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <script type="module" src="./main.js" defer></script>
-  </head>
-  <body>
-    <div class="app">
-      <header class="top">
-        <div class="brand">
-          <h1 class="app-title">Uninstall a Program (Bulk Edition)</h1>
-          <p class="subtitle">
-            Uninstall a program — or many at once. Search, sort, multi-select, remove in one run.
-          </p>
-        </div>
-        <div class="meta">
-          <span id="elevation-badge" class="auth-badge pending">Checking elevation…</span>
-          <span id="count-label" class="count">0 programs</span>
-        </div>
-      </header>
 
-      <div class="toolbar">
-        <input
-          id="search"
-          type="search"
-          placeholder="Search by name, category, or publisher…"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <label class="check-label">
-          <input id="show-system" type="checkbox" />
-          Show system components
-        </label>
-        <button id="refresh-btn" type="button" class="text-btn">Refresh</button>
-        <button id="select-visible-btn" type="button" class="text-btn">Select visible</button>
-        <button id="clear-btn" type="button" class="text-btn">Clear</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Uninstall a Program (Bulk Edition) — uninstall a program on Windows, or many at once. Search, sort, multi-select, quiet MSI uninstall, and admin elevation." />
+  <meta name="keywords"
+    content="uninstall a program, uninstall programs, windows uninstaller, bulk uninstall, uninstall multiple programs, batch remove software, windows 11 uninstaller" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Uninstall a Program (Bulk Edition)</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="module" src="./main.js" defer></script>
+</head>
+
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="meta">
+        <span id="elevation-badge" class="auth-badge pending">Checking elevation…</span>
+        <span id="count-label" class="count">0 programs</span>
       </div>
+    </header>
 
-      <section class="table-section">
-        <div class="table-wrap">
-          <table class="program-table">
-            <thead>
-              <tr>
-                <th class="col-check">
-                  <input id="select-all" type="checkbox" title="Select all visible" />
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="name" aria-pressed="true">
-                    Name <span class="sort-ind" aria-hidden="true">▲</span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="category">
-                    Category <span class="sort-ind" aria-hidden="true"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="publisher">
-                    Publisher <span class="sort-ind" aria-hidden="true"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="version">
-                    Version <span class="sort-ind" aria-hidden="true"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="size">
-                    Size <span class="sort-ind" aria-hidden="true"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="sort-btn" data-sort="status">
-                    Status <span class="sort-ind" aria-hidden="true"></span>
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="program-rows"></tbody>
-          </table>
-          <div id="empty-state" class="empty hidden">No programs match your search.</div>
-          <div id="loading-state" class="empty">Loading installed programs…</div>
-        </div>
-      </section>
-
-      <footer class="bottom">
-        <div class="selection-info">
-          <strong id="selected-count">0</strong> selected
-          <span class="sep">·</span>
-          <span id="selected-size">0 KB</span>
-        </div>
-        <button id="uninstall-btn" type="button" class="text-btn primary" disabled>
-          Uninstall selected
-        </button>
-      </footer>
-
-      <aside id="log-panel" class="log-panel" aria-live="polite">
-        <div class="log-header">
-          <span>Activity log</span>
-          <button id="clear-log-btn" type="button" class="text-btn tiny">Clear log</button>
-        </div>
-        <pre id="log"></pre>
-      </aside>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search by name, category, or publisher…" autocomplete="off"
+        spellcheck="false" />
+      <label class="check-label">
+        <input id="show-system" type="checkbox" />
+        Show system components
+      </label>
+      <button id="refresh-btn" type="button" class="text-btn">Refresh</button>
+      <button id="select-visible-btn" type="button" class="text-btn">Select visible</button>
+      <button id="clear-btn" type="button" class="text-btn">Clear</button>
     </div>
 
-    <dialog id="confirm-dialog">
-      <form method="dialog" class="confirm-form">
-        <h2>Confirm bulk uninstall</h2>
-        <p>
-          This will remove these programs sequentially. This cannot be undone from this app.
-        </p>
-        <ul id="confirm-list"></ul>
-        <div class="confirm-actions">
-          <button value="cancel" class="text-btn">Cancel</button>
-          <button id="confirm-ok" value="ok" class="text-btn danger">Uninstall</button>
-        </div>
-      </form>
-    </dialog>
-  </body>
+    <section class="table-section">
+      <div class="table-wrap">
+        <table class="program-table">
+          <thead>
+            <tr>
+              <th class="col-check">
+                <input id="select-all" type="checkbox" title="Select all visible" />
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="name" aria-pressed="true">
+                  Name <span class="sort-ind" aria-hidden="true">▲</span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="category">
+                  Category <span class="sort-ind" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="publisher">
+                  Publisher <span class="sort-ind" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="version">
+                  Version <span class="sort-ind" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="size">
+                  Size <span class="sort-ind" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="sort-btn" data-sort="status">
+                  Status <span class="sort-ind" aria-hidden="true"></span>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="program-rows"></tbody>
+        </table>
+        <div id="empty-state" class="empty hidden">No programs match your search.</div>
+        <div id="loading-state" class="empty">Loading installed programs…</div>
+      </div>
+    </section>
+
+    <footer class="bottom">
+      <div class="selection-info">
+        <strong id="selected-count">0</strong> selected
+        <span class="sep">·</span>
+        <span id="selected-size">0 KB</span>
+      </div>
+      <button id="uninstall-btn" type="button" class="text-btn primary" disabled>
+        Uninstall selected
+      </button>
+    </footer>
+
+    <aside id="log-panel" class="log-panel" aria-live="polite">
+      <div class="log-header">
+        <span>Activity log</span>
+        <button id="clear-log-btn" type="button" class="text-btn tiny">Clear log</button>
+      </div>
+      <pre id="log"></pre>
+    </aside>
+  </div>
+
+  <dialog id="confirm-dialog">
+    <form method="dialog" class="confirm-form">
+      <h2>Confirm bulk uninstall</h2>
+      <p>
+        This will remove these programs sequentially. This cannot be undone from this app.
+      </p>
+      <ul id="confirm-list"></ul>
+      <div class="confirm-actions">
+        <button value="cancel" class="text-btn">Cancel</button>
+        <button id="confirm-ok" value="ok" class="text-btn danger">Uninstall</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+
 </html>
