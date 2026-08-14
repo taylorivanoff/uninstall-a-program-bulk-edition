@@ -1,6 +1,15 @@
 const { invoke } = window.__TAURI__.core;
 const { listen } = window.__TAURI__.event;
 
+{
+  const platform = window.navigator.platform || "";
+  if (platform.includes("Mac")) document.body.classList.add("platform-darwin");
+  else if (platform.includes("Win")) document.body.classList.add("platform-win32");
+  if (globalThis.tauriTrayBridge?.bindWindowControls) {
+    globalThis.tauriTrayBridge.bindWindowControls(document);
+  }
+}
+
 /** @typedef {{
  *  id: string,
  *  displayName: string,

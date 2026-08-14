@@ -12,10 +12,10 @@
       {
         "label": "main",
         "title": "Uninstall a Program (Bulk Edition)",
-        "width": 1000,
-        "height": 720,
-        "minWidth": 760,
-        "minHeight": 520,
+        "width": 1153,
+        "height": 794,
+        "minWidth": 1153,
+        "minHeight": 794,
         "resizable": true,
         "visible": false
       }

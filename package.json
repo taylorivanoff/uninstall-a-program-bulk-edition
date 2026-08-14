@@ -26,12 +26,17 @@
     "tauri": "node scripts/run-tauri.cjs",
     "release": "node scripts/run-tauri.cjs build",
     "bump": "node scripts/bump-version.cjs",
-    "icon": "node scripts/run-tauri.cjs icon app-icon.png"
+    "icon": "node scripts/run-tauri.cjs icon app-icon.png",
+    "postinstall": "node scripts/sync-shared-styles.cjs",
+    "sync:styles": "node scripts/sync-shared-styles.cjs",
+    "predev": "node scripts/sync-shared-styles.cjs",
+    "prebuild": "node scripts/sync-shared-styles.cjs"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.11.1"
+    "@tauri-apps/api": "^2.11.1",
+    "@taylorivanoff/shared-styles": "file:../shared-styles"
   }
 }
