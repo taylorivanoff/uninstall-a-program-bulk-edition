@@ -1,7 +1,7 @@
 {
   "name": "uninstall-a-program",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Uninstall Many Programs — uninstall many programs at once on Windows",
   "keywords": [
     "uninstall-a-program",
