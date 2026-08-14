@@ -108,6 +108,33 @@ jobs:
           repository: taylorivanoff/tauri-tray-base
           path: tauri-tray-base
 
+      - name: Materialize shared-styles
+        shell: bash
+        run: |
+          set -e
+          VENDOR="bulk-uninstaller/src/vendor/shared-styles"
+          if [ ! -d "$VENDOR" ]; then
+            echo "No vendored shared-styles found — skip"
+            exit 0
+          fi
+          mkdir -p shared-styles
+          cp "$VENDOR"/*.css shared-styles/
+          cat > shared-styles/package.json <<'EOF'
+          {
+            "name": "@taylorivanoff/shared-styles",
+            "version": "0.0.0",
+            "files": ["tokens.css", "base.css", "window.css", "index.css"],
+            "exports": {
+              ".": "./index.css",
+              "./tokens.css": "./tokens.css",
+              "./base.css": "./base.css",
+              "./window.css": "./window.css",
+              "./index.css": "./index.css"
+            },
+            "style": "index.css"
+          }
+          EOF
+
       - name: Generate changelog
         id: changelog
         working-directory: bulk-uninstaller
