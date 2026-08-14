@@ -95,7 +95,7 @@ jobs:
     if: needs.check-version.outputs.should_release == 'true'
     runs-on: windows-latest
     steps:
-      - name: Checkout Uninstall a Program
+      - name: Checkout Uninstall Many Programs
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.check-version.outputs.ref }}
@@ -238,9 +238,9 @@ jobs:
             bulk-uninstaller/src-tauri/target/release/bundle/nsis/*.sig
             bulk-uninstaller/src-tauri/target/release/bundle/nsis/latest.json
           body: |
-            ## Uninstall a Program (Bulk Edition) v${{ needs.check-version.outputs.version }}
+            ## Uninstall Many Programs v${{ needs.check-version.outputs.version }}
 
-            Windows NSIS setup (`Uninstall a Program (Bulk Edition)_*_x64-setup.exe`).
+            Windows NSIS setup (`Uninstall Many Programs_*_x64-setup.exe`).
 
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}

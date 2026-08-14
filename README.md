@@ -1,4 +1,4 @@
-# Uninstall a Program
+# Uninstall Many Programs
 
 [![Release](https://img.shields.io/github/v/release/taylorivanoff/uninstall-a-program-bulk-edition)](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
 [![Downloads](https://img.shields.io/github/downloads/taylorivanoff/uninstall-a-program-bulk-edition/total)](https://github.com/taylorivanoff/uninstall-a-program-bulk-edition/releases)
@@ -34,7 +34,7 @@ bun run build
 
 Installer output:
 
-`src-tauri/target/release/bundle/nsis/Uninstall a Program (Bulk Edition)_0.1.0_x64-setup.exe`
+`src-tauri/target/release/bundle/nsis/Uninstall Many Programs_0.1.0_x64-setup.exe`
 
 ## Develop
 
@@ -50,7 +50,7 @@ bun run bump   # patch version across package.json / Cargo.toml / tauri.conf.jso
 
 ## Keywords
 
-`uninstall a program` · `uninstall programs` · `windows uninstaller` · `bulk uninstall` · `uninstall multiple programs` · `batch remove software` · `windows program remover` · `msi quiet uninstall` · `pc cleanup` · `software uninstaller windows 11`
+`uninstall many programs` · `uninstall a program` · `uninstall programs` · `windows uninstaller` · `bulk uninstall` · `uninstall multiple programs` · `batch remove software` · `windows program remover` · `msi quiet uninstall` · `pc cleanup` · `software uninstaller windows 11`
 
 ## License
 

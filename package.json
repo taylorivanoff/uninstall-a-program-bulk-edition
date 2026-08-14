@@ -2,7 +2,7 @@
   "name": "uninstall-a-program",
   "private": true,
   "version": "0.1.5",
-  "description": "Uninstall a Program (Bulk Edition) — uninstall a program, or many at once, on Windows",
+  "description": "Uninstall Many Programs — uninstall many programs at once on Windows",
   "keywords": [
     "uninstall-a-program",
     "uninstall-programs",

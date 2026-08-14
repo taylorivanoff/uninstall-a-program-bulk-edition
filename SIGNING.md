@@ -1,4 +1,4 @@
-# Signing configuration for Uninstall a Program (Bulk Edition)
+# Signing configuration for Uninstall Many Programs
 #
 # tauri.conf.json already sets:
 #   bundle.windows.digestAlgorithm = "sha256"
@@ -16,4 +16,4 @@
 #   signtool sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /sha1 <THUMBPRINT> <path-to-exe-or-installer>
 #
 # NSIS output name example:
-#   Uninstall a Program (Bulk Edition)_0.1.0_x64-setup.exe
+#   Uninstall Many Programs_0.1.0_x64-setup.exe

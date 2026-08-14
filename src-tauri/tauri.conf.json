@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Uninstall a Program (Bulk Edition)",
+  "productName": "Uninstall Many Programs",
   "version": "0.1.5",
   "identifier": "io.github.taylorivanoff.uninstall-a-program",
   "build": {
@@ -11,7 +11,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Uninstall a Program (Bulk Edition)",
+        "title": "Uninstall Many Programs",
         "width": 1153,
         "height": 794,
         "minWidth": 1153,
@@ -30,8 +30,8 @@
       "nsis"
     ],
     "publisher": "Taylor Ivanoff",
-    "shortDescription": "Uninstall a program — or many at once (bulk edition)",
-    "longDescription": "Uninstall a Program (Bulk Edition) is a fast bulk Windows program remover. Search and sort installed Win32/MSI apps, multi-select, and uninstall many programs in one run with quiet MSI support, safety guards, live progress, and administrator elevation.",
+    "shortDescription": "Uninstall many programs at once on Windows",
+    "longDescription": "Uninstall Many Programs is a fast bulk Windows program remover. Search and sort installed Win32/MSI apps, multi-select, and uninstall many programs in one run with quiet MSI support, safety guards, live progress, and administrator elevation.",
     "category": "Utility",
     "copyright": "Copyright © Taylor Ivanoff",
     "icon": [
