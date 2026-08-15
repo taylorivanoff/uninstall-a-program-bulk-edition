@@ -6,7 +6,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![Stack](https://img.shields.io/badge/stack-Tauri%202%20%2B%20Rust-24C8DB)
 
-Windows Settings and Control Panel force you to remove apps one at a time. Uninstall many programs at once on Windows. Search, multi-select, and remove Win32/MSI apps in one run.
+Windows Settings and Control Panel force you to remove apps one at a time. This tool allows you to uninstall many programs at once on Windows. Search, multi-select, and remove Win32/MSI apps in one run.
 
 <img width="1155" height="796" alt="{43BF515F-4566-4AF2-8EC9-BAE97DC0009F}" src="https://github.com/user-attachments/assets/3e924e9d-b9d7-4928-8417-58cfa8c3c40f" />
 
